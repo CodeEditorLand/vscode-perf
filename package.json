@@ -1,17 +1,30 @@
 {
-  "name": "@vscode/vscode-perf",
-  "version": "0.0.15",
+  "authors": "microsoft",
+  "bin": {
+    "vscode-perf": "bin/vscode-perf"
+  },
+  "dependencies": {
+    "chalk": "4.x",
+    "commander": "9.4.0",
+    "cookie": "0.5.0",
+    "js-base64": "3.7.4",
+    "node-fetch": "2.6.8",
+    "playwright": "1.29.2"
+  },
   "description": "Tooling for evaluating performance of VS Code",
+  "devDependencies": {
+    "@types/cookie": "0.5.1",
+    "@types/node": "18.x",
+    "@types/node-fetch": "2.6.2",
+    "typescript": "4.8.x"
+  },
   "homepage": "https://github.com/microsoft/vscode-perf",
+  "license": "MIT",
+  "main": "out/index",
+  "name": "@vscode/vscode-perf",
   "repository": {
     "type": "git",
     "url": "https://github.com/microsoft/vscode-perf"
-  },
-  "license": "MIT",
-  "main": "out/index",
-  "typings": "index.d.ts",
-  "bin": {
-    "vscode-perf": "bin/vscode-perf"
   },
   "scripts": {
     "build": "tsc -p ./",
@@ -19,19 +32,6 @@
     "prepare": "npm run build",
     "watch": "tsc -watch -p ./"
   },
-  "dependencies": {
-    "chalk": "^4.x",
-    "commander": "^9.4.0",
-    "cookie": "^0.5.0",
-    "js-base64": "^3.7.4",
-    "node-fetch": "2.6.8",
-    "playwright": "^1.29.2"
-  },
-  "devDependencies": {
-    "@types/cookie": "^0.5.1",
-    "@types/node": "18.x",
-    "@types/node-fetch": "^2.6.2",
-    "typescript": "4.8.x"
-  },
-  "authors": "microsoft"
+  "typings": "index.d.ts",
+  "version": "0.0.15"
 }

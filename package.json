@@ -1,43 +1,52 @@
 {
-    "name": "@vscode/vscode-perf",
-    "version": "0.0.15",
-    "description": "Tooling for evaluating performance of VS Code",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/microsoft/vscode-perf"
-    },
-    "homepage": "https://github.com/microsoft/vscode-perf",
-    "keywords": [
-        "vscode"
-    ],
-    "bin": {
-        "vscode-perf": "bin/vscode-perf"
-    },
-    "license": "MIT",
-    "authors": "microsoft",
-    "main": "out/index",
-    "typings": "index.d.ts",
-    "scripts": {
-        "compile": "tsc -p ./",
-        "build": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "prepare": "npm run build"
-    },
-    "engines": {
-        "node": ">= 16"
-    },
-    "dependencies": {
-        "chalk": "5.x",
-        "commander": "12.0.0",
-        "cookie": "0.6.0",
-        "js-base64": "3.7.7",
-        "node-fetch": "3.3.2",
-        "playwright": "1.42.1"
-    },
-    "devDependencies": {
-        "@types/node": "20.x",
-        "typescript": "5.4.x",
-        "@types/node-fetch": "2.6.11",
-        "@types/cookie": "0.6.0"
-    }
+	"name": "@vscode/vscode-perf",
+	"version": "0.0.1",
+	"private": false,
+	"description": "Tooling for evaluating performance of VS Code",
+	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"bugs": {
+		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Playform",
+		"email": "Hello@Playform.Cloud",
+		"url": "https://playform.cloud"
+	},
+	"type": "module",
+	"main": "out/index",
+	"typings": "index.d.ts",
+	"bin": {
+		"vscode-perf": "bin/vscode-perf"
+	},
+	"scripts": {
+		"build": "tsc -p ./",
+		"compile": "tsc -p ./",
+		"prepare": "npm run build",
+		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"watch": "tsc -watch -p ./"
+	},
+	"dependencies": {
+		"chalk": "5.x",
+		"commander": "12.0.0",
+		"cookie": "0.6.0",
+		"js-base64": "3.7.7",
+		"node-fetch": "3.3.2",
+		"playwright": "1.42.1"
+	},
+	"devDependencies": {
+		"@types/cookie": "0.6.0",
+		"@types/node": "20.x",
+		"@types/node-fetch": "2.6.11",
+		"typescript": "5.4.x",
+		"typescript-esbuild": "latest"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"authors": "microsoft"
 }

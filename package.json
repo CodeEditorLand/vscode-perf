@@ -1,7 +1,34 @@
 {
-	"authors": "microsoft",
+	"name": "@vscode/vscode-perf",
+	"version": "0.0.1",
+	"private": false,
+	"description": "Tooling for evaluating performance of VS Code",
+	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"bugs": {
+		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Playform",
+		"email": "Hello@Playform.Cloud",
+		"url": "https://playform.cloud"
+	},
+	"type": "module",
+	"main": "out/index",
+	"typings": "index.d.ts",
 	"bin": {
 		"vscode-perf": "bin/vscode-perf"
+	},
+	"scripts": {
+		"build": "tsc -p ./",
+		"compile": "tsc -p ./",
+		"prepare": "npm run build",
+		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"watch": "tsc -watch -p ./"
 	},
 	"dependencies": {
 		"chalk": "5.x",
@@ -11,7 +38,6 @@
 		"node-fetch": "3.3.2",
 		"playwright": "1.42.1"
 	},
-	"description": "Tooling for evaluating performance of VS Code",
 	"devDependencies": {
 		"@types/cookie": "0.6.0",
 		"@types/node": "20.x",
@@ -19,15 +45,8 @@
 		"typescript": "5.4.x",
 		"typescript-esbuild": "0.4.5"
 	},
-	"main": "out/index",
-	"name": "@vscode/vscode-perf",
-	"scripts": {
-		"build": "tsc -p ./",
-		"compile": "tsc -p ./",
-		"prepare": "npm run build",
-		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
-		"watch": "tsc -watch -p ./"
+	"publishConfig": {
+		"access": "public"
 	},
-	"type": "module",
-	"typings": "index.d.ts"
+	"authors": "microsoft"
 }

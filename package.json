@@ -1,45 +1,30 @@
 {
-	"author": {
-		"email": "Land@PlayForm.Cloud",
-		"name": "🌆 — Land —",
-		"url": "HTTPS://Land.PlayForm.Cloud"
-	},
-	"authors": "microsoft",
-	"bin": {
-		"vscode-perf": "bin/vscode-perf"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandPerf/issues"
-	},
-	"dependencies": {
-		"chalk": "5.x",
-		"commander": "12.0.0",
-		"cookie": "0.6.0",
-		"js-base64": "3.7.7",
-		"node-fetch": "3.3.2"
-	},
+	"name": "@vscode/vscode-perf",
+	"version": "0.0.1",
+	"private": false,
 	"description": "Tooling for evaluating performance of VS Code",
-	"devDependencies": {
-		"@playform/build": "0.0.7",
-		"@playform/document": "0.0.6",
-		"@types/cookie": "0.6.0",
-		"@types/node": "20.x",
-		"@types/node-fetch": "2.6.11"
-	},
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandPerf#readme",
 	"keywords": [
 		"land"
 	],
-	"license": "SEE LICENSE IN LICENSE",
-	"main": "out/index",
-	"name": "@vscode/vscode-perf",
-	"private": false,
-	"publishConfig": {
-		"access": "public"
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandPerf#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandPerf/issues"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+HTTPS://github.com/CodeEditorLand/LandPerf.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "🌆 — Land —",
+		"email": "Land@PlayForm.Cloud",
+		"url": "HTTPS://Land.PlayForm.Cloud"
+	},
+	"type": "module",
+	"main": "out/index",
+	"typings": "index.d.ts",
+	"bin": {
+		"vscode-perf": "bin/vscode-perf"
 	},
 	"scripts": {
 		"Document": "Document 'Source/**/*.ts'",
@@ -48,7 +33,22 @@
 		"prepare": "npm run build",
 		"prepublishOnly": "Build 'Source/**/*.ts'"
 	},
-	"type": "module",
-	"typings": "index.d.ts",
-	"version": "0.0.1"
+	"dependencies": {
+		"chalk": "5.x",
+		"commander": "12.0.0",
+		"cookie": "0.6.0",
+		"js-base64": "3.7.7",
+		"node-fetch": "3.3.2"
+	},
+	"devDependencies": {
+		"@playform/build": "0.0.7",
+		"@playform/document": "0.0.6",
+		"@types/cookie": "0.6.0",
+		"@types/node": "20.x",
+		"@types/node-fetch": "2.6.11"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"authors": "microsoft"
 }

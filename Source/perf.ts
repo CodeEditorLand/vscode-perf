@@ -278,7 +278,7 @@ function logMarker(content: string, marker: string, durations: Map<string, numbe
 	const duration = parseInt(matches[1]);
 	const markerDurations = durations.get(marker) ?? [];
 	markerDurations.push(duration);
-	markerDurations.sort((a, b) => a - b);
+	markerDurations.sort((/** @type {number} */ a, /** @type {number} */ b) => a - b);
 	durations.set(marker, markerDurations);
 
 	const middleIndex = Math.floor(markerDurations.length / 2);

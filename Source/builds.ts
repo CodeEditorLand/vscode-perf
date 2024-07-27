@@ -3,13 +3,20 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { dirname, join, posix } from 'path';
-import { BUILDS_FOLDER, Commit, Platform, platform, Quality, Runtime } from './constants';
-import { get } from 'https';
+import { dirname, join, posix } from "path";
+import {
+	BUILDS_FOLDER,
+	Commit,
+	Platform,
+	platform,
+	Quality,
+	Runtime,
+} from "./constants";
+import { get } from "https";
 import chalk from "chalk";
-import { createWriteStream, existsSync, promises } from 'fs';
-import { spawnSync } from 'child_process';
-import fetch from 'node-fetch';
+import { createWriteStream, existsSync, promises } from "fs";
+import { spawnSync } from "child_process";
+import fetch from "node-fetch";
 
 interface IBuildMetadata {
 	url: string;
@@ -17,16 +24,28 @@ interface IBuildMetadata {
 	version: string;
 }
 
-export async function installBuild(runtime: Runtime, quality: Quality, commit: Commit, unreleased?: boolean): Promise<string> {
-
-	const buildMetadata = await fetchBuildMetadata(runtime, quality, commit, unreleased);
+export async function installBuild(
+	runtime: Runtime,
+	quality: Quality,
+	commit: Commit,
+	unreleased?: boolean,
+): Promise<string> {
+	const buildMetadata = await fetchBuildMetadata(
+		runtime,
+		quality,
+		commit,
+		unreleased,
+	);
 	const buildName = getBuildArchiveName(runtime, buildMetadata);
 	const path = join(getBuildPath(buildMetadata.version), buildName);
 	let destination: string;
 
-	if (runtime === Runtime.Desktop && platform === Platform.WindowsX64 || platform === Platform.WindowsArm) {
+	if (
+		(runtime === Runtime.Desktop && platform === Platform.WindowsX64) ||
+		platform === Platform.WindowsArm
+	) {
 		// zip does not contain a single top level folder to use...
-		destination = path.substring(0, path.lastIndexOf('.zip'));
+		destination = path.substring(0, path.lastIndexOf(".zip"));
 	} else {
 		// zip contains a single top level folder to use
 		destination = dirname(path);
@@ -34,18 +53,26 @@ export async function installBuild(runtime: Runtime, quality: Quality, commit: C
 
 	if (!existsSync(path)) {
 		// Download
-		console.log(`${chalk.gray('[build]')} downloading build from ${chalk.green(buildMetadata.url)}...`);
+		console.log(
+			`${chalk.gray("[build]")} downloading build from ${chalk.green(buildMetadata.url)}...`,
+		);
 		await fileGet(buildMetadata.url, path);
 
 		// Unzip
-		console.log(`${chalk.gray('[build]')} unzipping build to ${chalk.green(destination)}...`);
+		console.log(
+			`${chalk.gray("[build]")} unzipping build to ${chalk.green(destination)}...`,
+		);
 		await unzip(path, destination);
 	}
 
 	return getBuildExecutable(runtime, quality, buildMetadata);
 }
 
-function getBuildExecutable(runtime: Runtime, quality: Quality, buildMetadata: IBuildMetadata): string {
+function getBuildExecutable(
+	runtime: Runtime,
+	quality: Quality,
+	buildMetadata: IBuildMetadata,
+): string {
 	const buildPath = getBuildPath(buildMetadata.version);
 	const buildName = getBuildName(runtime, quality, buildMetadata);
 
@@ -56,21 +83,43 @@ function getBuildExecutable(runtime: Runtime, quality: Quality, buildMetadata: I
 				case Platform.MacOSArm:
 				case Platform.LinuxX64:
 				case Platform.LinuxArm: {
-					const oldLocation = join(buildPath, buildName, 'server.sh');
+					const oldLocation = join(buildPath, buildName, "server.sh");
 					if (existsSync(oldLocation)) {
 						return oldLocation; // only valid until 1.64.x
 					}
 
-					return join(buildPath, buildName, 'bin', quality === Quality.Insider ? 'code-server-insiders' : quality === Quality.Exploration ? `code-server-exploration` : `code-server`);
+					return join(
+						buildPath,
+						buildName,
+						"bin",
+						quality === Quality.Insider
+							? "code-server-insiders"
+							: quality === Quality.Exploration
+								? `code-server-exploration`
+								: `code-server`,
+					);
 				}
 				case Platform.WindowsX64:
 				case Platform.WindowsArm: {
-					const oldLocation = join(buildPath, buildName, 'server.cmd');
+					const oldLocation = join(
+						buildPath,
+						buildName,
+						"server.cmd",
+					);
 					if (existsSync(oldLocation)) {
 						return oldLocation; // only valid until 1.64.x
 					}
 
-					return join(buildPath, buildName, 'bin', quality === Quality.Insider ? 'code-server-insiders.cmd' : quality === Quality.Exploration ? `code-server-exploration.cmd` : `code-server.cmd`);
+					return join(
+						buildPath,
+						buildName,
+						"bin",
+						quality === Quality.Insider
+							? "code-server-insiders.cmd"
+							: quality === Quality.Exploration
+								? `code-server-exploration.cmd`
+								: `code-server.cmd`,
+					);
 				}
 			}
 
@@ -78,13 +127,35 @@ function getBuildExecutable(runtime: Runtime, quality: Quality, buildMetadata: I
 			switch (platform) {
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
-					return join(buildPath, buildName, 'Contents', 'MacOS', 'Electron')
+					return join(
+						buildPath,
+						buildName,
+						"Contents",
+						"MacOS",
+						"Electron",
+					);
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
-					return join(buildPath, buildName, quality === Quality.Insider ? 'code-insiders' : quality === Quality.Exploration ? `code-exploration` : `code`)
+					return join(
+						buildPath,
+						buildName,
+						quality === Quality.Insider
+							? "code-insiders"
+							: quality === Quality.Exploration
+								? `code-exploration`
+								: `code`,
+					);
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
-					return join(buildPath, buildName, quality === Quality.Insider ? 'Code - Insiders.exe' : quality === Quality.Exploration ? `Code - Exploration.exe` : `Code.exe`)
+					return join(
+						buildPath,
+						buildName,
+						quality === Quality.Insider
+							? "Code - Insiders.exe"
+							: quality === Quality.Exploration
+								? `Code - Exploration.exe`
+								: `Code.exe`,
+					);
 			}
 	}
 }
@@ -96,22 +167,24 @@ function getBuildPath(commit: string): string {
 	return join(BUILDS_FOLDER, commit);
 }
 
-function getBuildArchiveName(runtime: Runtime, buildMetadata: IBuildMetadata): string {
+function getBuildArchiveName(
+	runtime: Runtime,
+	buildMetadata: IBuildMetadata,
+): string {
 	switch (runtime) {
-
 		// We currently do not have ARM enabled servers
 		// so we fallback to x64 until we ship ARM.
 		case Runtime.Web:
 			switch (platform) {
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
-					return 'vscode-server-darwin-x64-web.zip';
+					return "vscode-server-darwin-x64-web.zip";
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
-					return 'vscode-server-linux-x64-web.tar.gz';
+					return "vscode-server-linux-x64-web.tar.gz";
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
-					return 'vscode-server-win32-x64-web.zip';
+					return "vscode-server-win32-x64-web.zip";
 			}
 
 		// Every platform has its own name scheme, hilarious right?
@@ -121,33 +194,39 @@ function getBuildArchiveName(runtime: Runtime, buildMetadata: IBuildMetadata): s
 		case Runtime.Desktop:
 			switch (platform) {
 				case Platform.MacOSX64:
-					return 'VSCode-darwin.zip';
+					return "VSCode-darwin.zip";
 				case Platform.MacOSArm:
-					return 'VSCode-darwin-arm64.zip';
+					return "VSCode-darwin-arm64.zip";
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
-					return buildMetadata.url.split('/').pop()!;
+					return buildMetadata.url.split("/").pop()!;
 				case Platform.WindowsX64:
 				case Platform.WindowsArm: {
-					return platform === Platform.WindowsX64 ? `VSCode-win32-x64-${buildMetadata.productVersion}.zip` : `VSCode-win32-arm64-${buildMetadata.productVersion}.zip`;
+					return platform === Platform.WindowsX64
+						? `VSCode-win32-x64-${buildMetadata.productVersion}.zip`
+						: `VSCode-win32-arm64-${buildMetadata.productVersion}.zip`;
 				}
 			}
 	}
 }
 
-function getBuildName(runtime: Runtime, quality: Quality, buildMetadata: IBuildMetadata): string {
+function getBuildName(
+	runtime: Runtime,
+	quality: Quality,
+	buildMetadata: IBuildMetadata,
+): string {
 	switch (runtime) {
 		case Runtime.Web:
 			switch (platform) {
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
-					return 'vscode-server-darwin-x64-web';
+					return "vscode-server-darwin-x64-web";
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
-					return 'vscode-server-linux-x64-web';
+					return "vscode-server-linux-x64-web";
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
-					return 'vscode-server-win32-x64-web';
+					return "vscode-server-win32-x64-web";
 			}
 
 		// Here, only Windows does not play by our rules and adds the version number
@@ -156,14 +235,20 @@ function getBuildName(runtime: Runtime, quality: Quality, buildMetadata: IBuildM
 			switch (platform) {
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
-					return quality === Quality.Insider ? 'Visual Studio Code - Insiders.app' : quality === Quality.Exploration ? `Visual Studio Code - Exploration.app` : `Visual Studio Code.app`;
+					return quality === Quality.Insider
+						? "Visual Studio Code - Insiders.app"
+						: quality === Quality.Exploration
+							? `Visual Studio Code - Exploration.app`
+							: `Visual Studio Code.app`;
 				case Platform.LinuxX64:
-					return 'VSCode-linux-x64';
+					return "VSCode-linux-x64";
 				case Platform.LinuxArm:
-					return 'VSCode-linux-arm64';
+					return "VSCode-linux-arm64";
 				case Platform.WindowsX64:
 				case Platform.WindowsArm: {
-					return platform === Platform.WindowsX64 ? `VSCode-win32-x64-${buildMetadata.productVersion}` : `VSCode-win32-arm64-${buildMetadata.productVersion}`;
+					return platform === Platform.WindowsX64
+						? `VSCode-win32-x64-${buildMetadata.productVersion}`
+						: `VSCode-win32-arm64-${buildMetadata.productVersion}`;
 				}
 			}
 	}
@@ -175,94 +260,105 @@ function getBuildApiName(runtime: Runtime): string {
 			switch (platform) {
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
-					return 'server-darwin-web';
+					return "server-darwin-web";
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
-					return 'server-linux-x64-web';
+					return "server-linux-x64-web";
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
-					return 'server-win32-x64-web';
+					return "server-win32-x64-web";
 			}
 
 		case Runtime.Desktop:
 			switch (platform) {
 				case Platform.MacOSX64:
-					return 'darwin';
+					return "darwin";
 				case Platform.MacOSArm:
-					return 'darwin-arm64';
+					return "darwin-arm64";
 				case Platform.LinuxX64:
-					return 'linux-x64';
+					return "linux-x64";
 				case Platform.LinuxArm:
-					return 'linux-arm64';
+					return "linux-arm64";
 				case Platform.WindowsX64:
-					return 'win32-x64';
+					return "win32-x64";
 				case Platform.WindowsArm:
-					return 'win32-arm64';
+					return "win32-arm64";
 			}
 	}
 }
 
-async function fetchBuildMetadata(runtime: Runtime, quality: Quality, commit: Commit, unreleased?: boolean): Promise<IBuildMetadata> {
+async function fetchBuildMetadata(
+	runtime: Runtime,
+	quality: Quality,
+	commit: Commit,
+	unreleased?: boolean,
+): Promise<IBuildMetadata> {
 	const buildApiName = getBuildApiName(runtime);
 	let url: string;
-	if (commit === 'latest') {
-		url = `https://update.code.visualstudio.com/api/update/${buildApiName}/${quality}/latest${unreleased ? '?released=false' : ''}`;
+	if (commit === "latest") {
+		url = `https://update.code.visualstudio.com/api/update/${buildApiName}/${quality}/latest${unreleased ? "?released=false" : ""}`;
 	} else {
 		url = `https://update.code.visualstudio.com/api/versions/commit:${commit}/${buildApiName}/${quality}`;
 	}
 	const result = await jsonGet<IBuildMetadata>(url);
-	result.url = posix.join(posix.dirname(result.url), getBuildArchiveName(runtime, result));
+	result.url = posix.join(
+		posix.dirname(result.url),
+		getBuildArchiveName(runtime, result),
+	);
 	return result;
 }
 
 async function jsonGet<T>(url: string): Promise<T> {
-	const authResponse = await fetch(url, { method: 'GET' });
+	const authResponse = await fetch(url, { method: "GET" });
 	if (!authResponse.ok) {
-		throw new Error(`Failed to get response from update server: ${authResponse.status} ${authResponse.statusText}`);
+		throw new Error(
+			`Failed to get response from update server: ${authResponse.status} ${authResponse.statusText}`,
+		);
 	}
 	return await authResponse.json();
 }
 
 async function fileGet(url: string, path: string): Promise<void> {
-
 	// Ensure parent folder exists
 	await promises.mkdir(dirname(path), { recursive: true });
 
 	// Download
 	return new Promise((resolve, reject) => {
-		const request = get(url, res => {
+		const request = get(url, (res) => {
 			const outStream = createWriteStream(path);
-			outStream.on('close', () => resolve());
-			outStream.on('error', reject);
+			outStream.on("close", () => resolve());
+			outStream.on("error", reject);
 
-			res.on('error', reject);
+			res.on("error", reject);
 			res.pipe(outStream);
 		});
 
-		request.on('error', reject);
+		request.on("error", reject);
 	});
 }
 
 async function unzip(source: string, destination: string): Promise<void> {
-
 	// *.zip: macOS, Windows
-	if (source.endsWith('.zip')) {
-
+	if (source.endsWith(".zip")) {
 		// Windows
-		if (platform === Platform.WindowsX64 || platform === Platform.WindowsArm) {
-			spawnSync('powershell.exe', [
-				'-NoProfile',
-				'-ExecutionPolicy', 'Bypass',
-				'-NonInteractive',
-				'-NoLogo',
-				'-Command',
-				`Microsoft.PowerShell.Archive\\Expand-Archive -Path "${source}" -DestinationPath "${destination}"`
+		if (
+			platform === Platform.WindowsX64 ||
+			platform === Platform.WindowsArm
+		) {
+			spawnSync("powershell.exe", [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-NonInteractive",
+				"-NoLogo",
+				"-Command",
+				`Microsoft.PowerShell.Archive\\Expand-Archive -Path "${source}" -DestinationPath "${destination}"`,
 			]);
 		}
 
 		// macOS
 		else {
-			spawnSync('unzip', [source, '-d', destination]);
+			spawnSync("unzip", [source, "-d", destination]);
 		}
 	}
 
@@ -272,6 +368,6 @@ async function unzip(source: string, destination: string): Promise<void> {
 			await promises.mkdir(destination); // tar does not create extractDir by default
 		}
 
-		spawnSync('tar', ['-xzf', source, '-C', destination]);
+		spawnSync("tar", ["-xzf", source, "-C", destination]);
 	}
 }

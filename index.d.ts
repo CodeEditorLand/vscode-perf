@@ -7,17 +7,17 @@ export enum Quality {
 	/**
 	 * Stable quality
 	 */
-	Stable = 'stable',
+	Stable = "stable",
 
 	/**
 	 * Insider quality
 	 */
-	Insider = 'insider',
+	Insider = "insider",
 
 	/**
 	 * Exploration quality
 	 */
-	Exploration = 'exploration'
+	Exploration = "exploration",
 }
 
 export interface Options {
@@ -69,7 +69,7 @@ export interface Options {
 	/**
 	 * whether to measure the performance of desktop or web runtime. Defaults to desktop.
 	 */
-	readonly runtime?: 'desktop' | 'web';
+	readonly runtime?: "desktop" | "web";
 
 	/**
 	 * a GitHub token of scopes 'repo', 'workflow', 'user:email', 'read:user' to enable additional performance tests targetting web

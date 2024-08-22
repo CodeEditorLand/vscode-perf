@@ -1,7 +1,15 @@
 {
-	"authors": "microsoft",
+	"name": "@vscode/vscode-perf",
+	"description": "Tooling for evaluating performance of VS Code",
+	"main": "out/index",
+	"typings": "index.d.ts",
 	"bin": {
 		"vscode-perf": "bin/vscode-perf"
+	},
+	"scripts": {
+		"build": "tsc -p ./",
+		"compile": "tsc -p ./",
+		"prepare": "npm run build"
 	},
 	"dependencies": {
 		"chalk": "5.3",
@@ -10,18 +18,10 @@
 		"js-base64": "3.7.7",
 		"node-fetch": "4.0.0-beta.4"
 	},
-	"description": "Tooling for evaluating performance of VS Code",
 	"devDependencies": {
 		"@types/cookie": "0.6.0",
 		"@types/node": "22.4",
 		"@types/node-fetch": "3.0.3"
 	},
-	"main": "out/index",
-	"name": "@vscode/vscode-perf",
-	"scripts": {
-		"build": "tsc -p ./",
-		"compile": "tsc -p ./",
-		"prepare": "npm run build"
-	},
-	"typings": "index.d.ts"
+	"authors": "microsoft"
 }

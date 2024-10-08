@@ -1,27 +1,43 @@
 {
-	"authors": "microsoft",
-	"bin": {
-		"vscode-perf": "bin/vscode-perf"
-	},
-	"dependencies": {
-		"chalk": "5.x",
-		"commander": "12.1.0",
-		"cookie": "0.7.2",
-		"js-base64": "3.7.7",
-		"node-fetch": "3.3.2"
-	},
-	"description": "Tooling for evaluating performance of VS Code",
-	"devDependencies": {
-		"@types/cookie": "0.6.0",
-		"@types/node": "22.x",
-		"@types/node-fetch": "2.6.11"
-	},
-	"main": "out/index",
-	"name": "@vscode/vscode-perf",
-	"scripts": {
-		"build": "tsc -p ./",
-		"compile": "tsc -p ./",
-		"prepare": "npm run build"
-	},
-	"typings": "index.d.ts"
+    "name": "@vscode/vscode-perf",
+    "version": "0.0.19",
+    "description": "Tooling for evaluating performance of VS Code",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/microsoft/vscode-perf"
+    },
+    "homepage": "https://github.com/microsoft/vscode-perf",
+    "keywords": [
+        "vscode"
+    ],
+    "bin": {
+        "vscode-perf": "bin/vscode-perf"
+    },
+    "license": "MIT",
+    "authors": "microsoft",
+    "main": "out/index",
+    "typings": "index.d.ts",
+    "scripts": {
+        "compile": "tsc -p ./",
+        "build": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "prepare": "npm run build"
+    },
+    "engines": {
+        "node": ">= 16"
+    },
+    "dependencies": {
+        "chalk": "^4.x",
+        "commander": "^9.4.0",
+        "cookie": "^0.7.2",
+        "js-base64": "^3.7.4",
+        "node-fetch": "2.6.8",
+        "playwright": "^1.29.2"
+    },
+    "devDependencies": {
+        "@types/node": "20.x",
+        "typescript": "5.6.x",
+        "@types/node-fetch": "^2.6.2",
+        "@types/cookie": "^0.6.0"
+    }
 }

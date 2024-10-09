@@ -4,17 +4,17 @@
 		"vscode-perf": "bin/vscode-perf"
 	},
 	"dependencies": {
-		"chalk": "^5.x",
-		"commander": "^12.1.0",
-		"cookie": "^0.7.2",
-		"js-base64": "^3.7.7",
+		"chalk": "5.x",
+		"commander": "12.1.0",
+		"cookie": "1.0.0",
+		"js-base64": "3.7.7",
 		"node-fetch": "3.3.2"
 	},
 	"description": "Tooling for evaluating performance of VS Code",
 	"devDependencies": {
-		"@types/cookie": "^0.6.0",
+		"@types/cookie": "0.6.0",
 		"@types/node": "22.x",
-		"@types/node-fetch": "^2.6.11"
+		"@types/node-fetch": "2.6.11"
 	},
 	"main": "out/index",
 	"name": "@vscode/vscode-perf",

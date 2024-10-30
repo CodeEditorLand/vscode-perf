@@ -12,8 +12,8 @@
 	},
 	"description": "Tooling for evaluating performance of VS Code",
 	"devDependencies": {
-		"@types/cookie": "0.6.0",
-		"@types/node": "22.x",
+		"@types/cookie": "1.0.0",
+		"@types/node": "22.8.4",
 		"@types/node-fetch": "2.6.11"
 	},
 	"main": "out/index",

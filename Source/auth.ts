@@ -20,14 +20,17 @@ function* flatten(...iterables: Uint8Array[]) {
 
 async function encrypt(serverKey: Uint8Array, data: string): Promise<string> {
 	const iv = webcrypto.getRandomValues(new Uint8Array(12));
+
 	const clientKeyObj = await webcrypto.subtle.generateKey(
 		{ name: "AES-GCM", length: 256 },
 		true,
 		["encrypt", "decrypt"],
 	);
+
 	const clientKey = new Uint8Array(
 		await webcrypto.subtle.exportKey("raw", clientKeyObj),
 	);
+
 	const keyData = new Uint8Array(32);
 
 	for (let i = 0; i < keyData.byteLength; i++) {
@@ -41,13 +44,17 @@ async function encrypt(serverKey: Uint8Array, data: string): Promise<string> {
 		true,
 		["encrypt", "decrypt"],
 	);
+
 	const dataBase64 = Base64.encode(data);
+
 	const dataUint8Array = Base64.toUint8Array(dataBase64);
+
 	const cipherText = await webcrypto.subtle.encrypt(
 		{ name: "AES-GCM", iv },
 		key,
 		dataUint8Array,
 	);
+
 	const result = new Uint8Array(
 		flatten(clientKey, iv, new Uint8Array(cipherText)),
 	);
@@ -74,11 +81,15 @@ export async function generateVscodeDevAuthState(
 	}
 
 	const setCookieHeaders = authResponse.headers.raw()["set-cookie"];
+
 	const vscodeSessionHeader = setCookieHeaders.find((header) =>
 		header.startsWith("vscode.session="),
 	);
+
 	const vscodeSessionCookie = cookie.parse(vscodeSessionHeader!);
+
 	const rawServerKey = await authResponse.text();
+
 	const serverKey = Base64.toUint8Array(rawServerKey);
 
 	if (serverKey.byteLength != 32) {

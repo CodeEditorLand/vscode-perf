@@ -106,6 +106,7 @@ export async function run(options?: Options): Promise<void> {
 
 		const runtime =
 			options.runtime === "web" ? Runtime.Web : Runtime.Desktop;
+
 		const build = await getBuild(options, runtime);
 		await launch({
 			build,
@@ -133,11 +134,13 @@ export async function run(options?: Options): Promise<void> {
 
 async function getBuild(options: Options, runtime: Runtime): Promise<string> {
 	let build: string | Quality = options.build;
+
 	if (runtime === Runtime.Web) {
 		let url =
 			build === "stable"
 				? "https://vscode.dev"
 				: "https://insiders.vscode.dev";
+
 		if (
 			typeof options?.commit === "string" &&
 			options.commit !== "latest"

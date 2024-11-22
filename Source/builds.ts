@@ -37,8 +37,11 @@ export async function installBuild(
 		commit,
 		unreleased,
 	);
+
 	const buildName = getBuildArchiveName(runtime, buildMetadata);
+
 	const path = join(getBuildPath(buildMetadata.version), buildName);
+
 	let destination: string;
 
 	if (
@@ -75,6 +78,7 @@ function getBuildExecutable(
 	buildMetadata: IBuildMetadata,
 ): string {
 	const buildPath = getBuildPath(buildMetadata.version);
+
 	const buildName = getBuildName(runtime, quality, buildMetadata);
 
 	switch (runtime) {
@@ -85,6 +89,7 @@ function getBuildExecutable(
 				case Platform.LinuxX64:
 				case Platform.LinuxArm: {
 					const oldLocation = join(buildPath, buildName, "server.sh");
+
 					if (existsSync(oldLocation)) {
 						return oldLocation; // only valid until 1.64.x
 					}
@@ -107,6 +112,7 @@ function getBuildExecutable(
 						buildName,
 						"server.cmd",
 					);
+
 					if (existsSync(oldLocation)) {
 						return oldLocation; // only valid until 1.64.x
 					}
@@ -135,6 +141,7 @@ function getBuildExecutable(
 						"MacOS",
 						"Electron",
 					);
+
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
 					return join(
@@ -146,6 +153,7 @@ function getBuildExecutable(
 								? `code-exploration`
 								: `code`,
 					);
+
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
 					return join(
@@ -180,9 +188,11 @@ function getBuildArchiveName(
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
 					return "vscode-server-darwin-x64-web.zip";
+
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
 					return "vscode-server-linux-x64-web.tar.gz";
+
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
 					return "vscode-server-win32-x64-web.zip";
@@ -196,11 +206,14 @@ function getBuildArchiveName(
 			switch (platform) {
 				case Platform.MacOSX64:
 					return "VSCode-darwin.zip";
+
 				case Platform.MacOSArm:
 					return "VSCode-darwin-arm64.zip";
+
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
 					return buildMetadata.url.split("/").pop()!;
+
 				case Platform.WindowsX64:
 				case Platform.WindowsArm: {
 					return platform === Platform.WindowsX64
@@ -222,9 +235,11 @@ function getBuildName(
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
 					return "vscode-server-darwin-x64-web";
+
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
 					return "vscode-server-linux-x64-web";
+
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
 					return "vscode-server-win32-x64-web";
@@ -241,10 +256,13 @@ function getBuildName(
 						: quality === Quality.Exploration
 							? `Visual Studio Code - Exploration.app`
 							: `Visual Studio Code.app`;
+
 				case Platform.LinuxX64:
 					return "VSCode-linux-x64";
+
 				case Platform.LinuxArm:
 					return "VSCode-linux-arm64";
+
 				case Platform.WindowsX64:
 				case Platform.WindowsArm: {
 					return platform === Platform.WindowsX64
@@ -262,9 +280,11 @@ function getBuildApiName(runtime: Runtime): string {
 				case Platform.MacOSX64:
 				case Platform.MacOSArm:
 					return "server-darwin-web";
+
 				case Platform.LinuxX64:
 				case Platform.LinuxArm:
 					return "server-linux-x64-web";
+
 				case Platform.WindowsX64:
 				case Platform.WindowsArm:
 					return "server-win32-x64-web";
@@ -274,14 +294,19 @@ function getBuildApiName(runtime: Runtime): string {
 			switch (platform) {
 				case Platform.MacOSX64:
 					return "darwin";
+
 				case Platform.MacOSArm:
 					return "darwin-arm64";
+
 				case Platform.LinuxX64:
 					return "linux-x64";
+
 				case Platform.LinuxArm:
 					return "linux-arm64";
+
 				case Platform.WindowsX64:
 					return "win32-x64";
+
 				case Platform.WindowsArm:
 					return "win32-arm64";
 			}
@@ -295,7 +320,9 @@ async function fetchBuildMetadata(
 	unreleased?: boolean,
 ): Promise<IBuildMetadata> {
 	const buildApiName = getBuildApiName(runtime);
+
 	let url: string;
+
 	if (commit === "latest") {
 		url = `https://update.code.visualstudio.com/api/update/${buildApiName}/${quality}/latest${unreleased ? "?released=false" : ""}`;
 	} else {
@@ -306,11 +333,13 @@ async function fetchBuildMetadata(
 		posix.dirname(result.url),
 		getBuildArchiveName(runtime, result),
 	);
+
 	return result;
 }
 
 async function jsonGet<T>(url: string): Promise<T> {
 	const authResponse = await fetch(url, { method: "GET" });
+
 	if (!authResponse.ok) {
 		throw new Error(
 			`Failed to get response from update server: ${authResponse.status} ${authResponse.statusText}`,

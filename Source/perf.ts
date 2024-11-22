@@ -24,6 +24,7 @@ import {
 import { IPlaywrightStorageState } from "./types";
 
 const PERFORMANCE_RUN_TIMEOUT = 60000;
+
 const MB = 1024 * 1024;
 
 export interface Options {
@@ -72,14 +73,18 @@ export async function launch(options: Options) {
 	}
 
 	const runs = options.runs ?? PERFORMANCE_RUNS;
+
 	const durations = new Map<string, number[]>();
+
 	const perfFile =
 		(options.runtime === Runtime.Web
 			? (options.profAppendTimers ?? options.durationMarkersFile)
 			: options.durationMarkersFile) ?? PERFORMANCE_FILE;
+
 	const markers = options.durationMarkers?.length
 		? [...options.durationMarkers]
 		: ["ellapsed"];
+
 	const playwrightStorageState =
 		options.runtime === Runtime.Web
 			? await preparePlaywright(options)
@@ -91,8 +96,11 @@ export async function launch(options: Options) {
 		);
 
 		let timedOut = false;
+
 		let promise: Promise<string | undefined>;
+
 		const abortController = new AbortController();
+
 		const abortListener = () => {
 			abortController.abort();
 			process.removeListener("SIGINT", abortListener);
@@ -107,7 +115,9 @@ export async function launch(options: Options) {
 					markers,
 					abortController.signal,
 				);
+
 				break;
+
 			case Runtime.Web:
 				promise = launchWeb(
 					options,
@@ -116,10 +126,12 @@ export async function launch(options: Options) {
 					playwrightStorageState,
 					abortController.signal,
 				);
+
 				break;
 		}
 
 		let handle;
+
 		const content = await Promise.race([
 			new Promise<void>((resolve) => {
 				handle = setTimeout(() => {
@@ -137,6 +149,7 @@ export async function launch(options: Options) {
 			abortController.abort();
 		} else {
 			clearTimeout(handle);
+
 			if (abortController.signal.aborted) {
 				process.exit(); // Exit if there is an interruption
 			}
@@ -151,6 +164,7 @@ export async function launch(options: Options) {
 	}
 
 	console.log(`${chalk.gray("[perf]")} ${chalk.blueBright("Summary")}:`);
+
 	for (const marker of markers) {
 		const markerDurations = durations.get(marker) ?? [];
 		console.log(
@@ -254,6 +268,7 @@ async function launchDesktop(
 
 	if (options.profAppendTimers) {
 		const content = readLastLineSync(options.profAppendTimers);
+
 		return `ellapsed	${content}`;
 	}
 
@@ -264,6 +279,7 @@ async function preparePlaywright(
 	options: Options,
 ): Promise<IPlaywrightStorageState | undefined> {
 	const url = new URL(options.build);
+
 	if (
 		options.token &&
 		(url.hostname === VSCODE_DEV_HOST_NAME ||
@@ -325,6 +341,7 @@ async function launchWeb(
 	});
 
 	const cdp = await page.context().newCDPSession(page);
+
 	const heapTracing = await startHeapTracing(cdp);
 
 	if (options.verbose) {
@@ -351,12 +368,14 @@ async function launchWeb(
 	return new Promise<string>(async (resolve) => {
 		page.on("console", async (msg) => {
 			const text = msg.text();
+
 			if (options.verbose) {
 				console.error(`Playwright Console: ${text}`);
 			}
 
 			// Write full message to perf file if we got a path
 			const matches = /\[prof-timers\] (.+)/.exec(text);
+
 			if (matches?.[1]) {
 				await new Promise((resolve) => setTimeout(resolve, 3000)); // give some time for page to settle
 				const data = await heapTracing.stop();
@@ -404,8 +423,11 @@ async function resolveStartupHeapStatistics(
 
 	// Compute GC statistics
 	let minorGCs = 0;
+
 	let majorGCs = 0;
+
 	let garbage = 0;
+
 	let duration = 0;
 
 	for (const event of data) {
@@ -413,8 +435,10 @@ async function resolveStartupHeapStatistics(
 			// Major/Minor GC Events
 			case "MinorGC":
 				minorGCs++;
+
 			case "MajorGC":
 				majorGCs++;
+
 				if (
 					event.args &&
 					typeof event.args.usedHeapSizeAfter === "number" &&
@@ -431,6 +455,7 @@ async function resolveStartupHeapStatistics(
 			case "V8.GCFinalizeMC":
 			case "V8.GCScavenger":
 				duration += event.dur;
+
 				break;
 		}
 	}
@@ -461,6 +486,7 @@ function gcStatisticsToString({
 async function collectHeapSnaptshot(cdp: playwright.CDPSession) {
 	const usedSizeBeforeGC = (await cdp.send("Runtime.getHeapUsage")).usedSize;
 	await cdp.send("HeapProfiler.collectGarbage");
+
 	const usedSizeAfterGC = (await cdp.send("Runtime.getHeapUsage")).usedSize;
 
 	return {
@@ -475,6 +501,7 @@ function logMarker(
 	durations: Map<string, number[]>,
 ): void {
 	const regex = new RegExp(`${escapeRegExpCharacters(marker)}\\s+(\\d+)`);
+
 	const matches = regex.exec(content);
 
 	if (!matches?.length) {
@@ -482,6 +509,7 @@ function logMarker(
 	}
 
 	const duration = parseInt(matches[1]);
+
 	const markerDurations = durations.get(marker) ?? [];
 	markerDurations.push(duration);
 	markerDurations.sort(
@@ -490,6 +518,7 @@ function logMarker(
 	durations.set(marker, markerDurations);
 
 	const middleIndex = Math.floor(markerDurations.length / 2);
+
 	const median =
 		markerDurations.length % 2 === 0
 			? (markerDurations[middleIndex - 1] +
@@ -504,9 +533,11 @@ function logMarker(
 
 function readLastLineSync(path: string): string {
 	const contents = fs.readFileSync(path, "utf8");
+
 	const lines = contents.split(/\r?\n/);
 
 	let lastLine: string | undefined;
+
 	while (!lastLine && lines.length > 0) {
 		lastLine = lines.pop();
 	}

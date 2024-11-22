@@ -7,6 +7,7 @@ export interface IPlaywrightStorageState {
 	cookies: Array<{
 		name: string;
 		value: string;
+
 		domain: string;
 		path: string;
 		expires: number;

@@ -21,7 +21,9 @@ import {
 
 interface IBuildMetadata {
 	url: string;
+
 	productVersion: string;
+
 	version: string;
 }
 
@@ -60,12 +62,14 @@ export async function installBuild(
 		console.log(
 			`${chalk.gray("[build]")} downloading build from ${chalk.green(buildMetadata.url)}...`,
 		);
+
 		await fileGet(buildMetadata.url, path);
 
 		// Unzip
 		console.log(
 			`${chalk.gray("[build]")} unzipping build to ${chalk.green(destination)}...`,
 		);
+
 		await unzip(path, destination);
 	}
 
@@ -105,6 +109,7 @@ function getBuildExecutable(
 								: `code-server`,
 					);
 				}
+
 				case Platform.WindowsX64:
 				case Platform.WindowsArm: {
 					const oldLocation = join(
@@ -173,6 +178,7 @@ function getBuildPath(commit: string): string {
 	if (platform === Platform.WindowsX64 || platform === Platform.WindowsArm) {
 		return join(BUILDS_FOLDER, commit.substring(0, 6)); // keep the folder path small for windows max path length restrictions
 	}
+
 	return join(BUILDS_FOLDER, commit);
 }
 
@@ -328,7 +334,9 @@ async function fetchBuildMetadata(
 	} else {
 		url = `https://update.code.visualstudio.com/api/versions/commit:${commit}/${buildApiName}/${quality}`;
 	}
+
 	const result = await jsonGet<IBuildMetadata>(url);
+
 	result.url = posix.join(
 		posix.dirname(result.url),
 		getBuildArchiveName(runtime, result),
@@ -345,6 +353,7 @@ async function jsonGet<T>(url: string): Promise<T> {
 			`Failed to get response from update server: ${authResponse.status} ${authResponse.statusText}`,
 		);
 	}
+
 	return await authResponse.json();
 }
 
@@ -356,10 +365,13 @@ async function fileGet(url: string, path: string): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const request = get(url, (res) => {
 			const outStream = createWriteStream(path);
+
 			outStream.on("close", () => resolve());
+
 			outStream.on("error", reject);
 
 			res.on("error", reject);
+
 			res.pipe(outStream);
 		});
 

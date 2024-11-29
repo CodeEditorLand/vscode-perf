@@ -13,19 +13,33 @@ import { launch } from "./perf";
 
 interface Options extends OptionValues {
 	build: string | Quality;
+
 	commit?: Commit;
+
 	unreleased?: boolean;
+
 	durationMarkers?: string | string[];
+
 	durationMarkersFile?: string;
+
 	runs?: string;
+
 	folder?: string;
+
 	file?: string;
+
 	verbose?: boolean;
+
 	profAppendTimers?: string;
+
 	profAppendHeapStatistics?: boolean;
+
 	runtime?: string;
+
 	token?: string;
+
 	runtimeTraceCategories?: string;
+
 	disableCachedData?: boolean;
 }
 
@@ -102,12 +116,14 @@ export async function run(options?: Options): Promise<void> {
 		try {
 			rmSync(ROOT, { recursive: true });
 		} catch (error) {}
+
 		mkdirSync(ROOT, { recursive: true });
 
 		const runtime =
 			options.runtime === "web" ? Runtime.Web : Runtime.Desktop;
 
 		const build = await getBuild(options, runtime);
+
 		await launch({
 			build,
 			runtime,
@@ -128,6 +144,7 @@ export async function run(options?: Options): Promise<void> {
 		});
 	} catch (error) {
 		console.log(`${chalk.red("[error]")} ${error}`);
+
 		process.exit(1);
 	}
 }
@@ -147,6 +164,7 @@ async function getBuild(options: Options, runtime: Runtime): Promise<string> {
 		) {
 			url += `?vscode-version=${options.commit}`;
 		}
+
 		return url;
 	} else {
 		switch (build) {
@@ -161,5 +179,6 @@ async function getBuild(options: Options, runtime: Runtime): Promise<string> {
 				);
 		}
 	}
+
 	return build;
 }

@@ -29,34 +29,52 @@ const MB = 1024 * 1024;
 
 export interface Options {
 	build: string;
+
 	runtime: Runtime;
+
 	durationMarkers?: string[];
+
 	durationMarkersFile?: string;
+
 	runs?: number;
+
 	folderToOpen?: string;
+
 	fileToOpen?: string;
+
 	profAppendTimers?: string;
+
 	profAppendHeapStatistics?: boolean;
+
 	verbose?: boolean;
+
 	token?: string;
+
 	runtimeTraceCategories?: string;
+
 	disableCachedData?: boolean;
 }
 
 interface ITracingData {
 	readonly args?: {
 		readonly usedHeapSizeAfter?: number;
+
 		readonly usedHeapSizeBefore?: number;
 	};
+
 	readonly dur: number; // in microseconds
 	readonly name: string; // e.g. MinorGC or MajorGC
 }
 
 interface IGCStatistics {
 	readonly used: number;
+
 	readonly garbage: number;
+
 	readonly majorGCs: number;
+
 	readonly minorGCs: number;
+
 	readonly duration: number;
 }
 
@@ -64,6 +82,7 @@ export async function launch(options: Options) {
 	try {
 		fs.rmSync(DATA_FOLDER, { recursive: true });
 	} catch (error) {}
+
 	fs.mkdirSync(DATA_FOLDER, { recursive: true });
 
 	if (options.runtimeTraceCategories || options.profAppendHeapStatistics) {
@@ -103,8 +122,10 @@ export async function launch(options: Options) {
 
 		const abortListener = () => {
 			abortController.abort();
+
 			process.removeListener("SIGINT", abortListener);
 		};
+
 		process.on("SIGINT", abortListener);
 
 		switch (options.runtime) {
@@ -136,6 +157,7 @@ export async function launch(options: Options) {
 			new Promise<void>((resolve) => {
 				handle = setTimeout(() => {
 					timedOut = true;
+
 					resolve();
 				}, PERFORMANCE_RUN_TIMEOUT);
 			}),
@@ -146,6 +168,7 @@ export async function launch(options: Options) {
 			console.log(
 				`${chalk.red("[perf]")} timeout after ${chalk.green(`${PERFORMANCE_RUN_TIMEOUT}ms`)}`,
 			);
+
 			abortController.abort();
 		} else {
 			clearTimeout(handle);
@@ -153,6 +176,7 @@ export async function launch(options: Options) {
 			if (abortController.signal.aborted) {
 				process.exit(); // Exit if there is an interruption
 			}
+
 			if (content) {
 				for (const marker of markers) {
 					logMarker(content, marker, durations);
@@ -167,6 +191,7 @@ export async function launch(options: Options) {
 
 	for (const marker of markers) {
 		const markerDurations = durations.get(marker) ?? [];
+
 		console.log(
 			`${chalk.gray("[perf]")} ${marker}: ${chalk.green(`${markerDurations[0]}ms`)} (fastest), ${chalk.green(`${markerDurations[markerDurations.length - 1]}ms`)} (slowest), ${chalk.green(`${markerDurations[Math.floor(markerDurations.length / 2)]}ms`)} (median)`,
 		);
@@ -204,11 +229,13 @@ async function launchDesktop(
 
 	if (options.profAppendTimers) {
 		codeArgs.push("--prof-append-timers");
+
 		codeArgs.push(options.profAppendTimers);
 	}
 
 	for (const marker of markers) {
 		codeArgs.push("--prof-duration-markers");
+
 		codeArgs.push(marker);
 	}
 
@@ -225,14 +252,18 @@ async function launchDesktop(
 			RUNTIME_TRACE_FOLDER,
 			`chrometrace_${new Date().getTime()}.log`,
 		);
+
 		console.log(
 			`${chalk.gray("[perf]")} saving chromium trace file at ${chalk.green(`${traceFilePath}`)}`,
 		);
+
 		codeArgs.push(`--trace-startup-file=${traceFilePath}`);
 
 		if (options.profAppendHeapStatistics) {
 			codeArgs.push(`--enable-tracing=v8`);
+
 			codeArgs.push(`--trace-startup-format=json`);
+
 			codeArgs.push(`--trace-startup-duration=5`);
 		} else if (options.runtimeTraceCategories) {
 			codeArgs.push(`--enable-tracing=${options.runtimeTraceCategories}`);
@@ -244,13 +275,17 @@ async function launchDesktop(
 	}
 
 	let childProcess: cp.ChildProcessWithoutNullStreams | undefined;
+
 	signal.addEventListener("abort", () => childProcess?.kill());
+
 	childProcess = cp.spawn(options.build, codeArgs);
+
 	childProcess.stdout.on("data", (data) => {
 		if (options.verbose) {
 			console.log(`${chalk.gray("[electron]")}: ${data.toString()}`);
 		}
 	});
+
 	childProcess.stderr.on("data", (data) => {
 		if (options.verbose) {
 			console.log(`${chalk.red("[electron]")}: ${data.toString()}`);
@@ -260,6 +295,7 @@ async function launchDesktop(
 	await new Promise<void>((resolve) =>
 		childProcess?.on("exit", () => resolve()),
 	);
+
 	childProcess = undefined;
 
 	if (fs.existsSync(perfFile)) {
@@ -287,6 +323,7 @@ async function preparePlaywright(
 	) {
 		return generateVscodeDevAuthState(options.token);
 	}
+
 	return undefined;
 }
 
@@ -319,6 +356,7 @@ async function launchWeb(
 
 	// disable annoyers
 	payload.push(["skipWelcome", "true"]);
+
 	payload.push(["skipReleaseNotes", "true"]);
 
 	url.searchParams.set("payload", JSON.stringify(payload));
@@ -348,7 +386,9 @@ async function launchWeb(
 		page.on("pageerror", (error) =>
 			console.error(`Playwright ERROR: page error: ${error}`),
 		);
+
 		page.on("crash", () => console.error("Playwright ERROR: page crash"));
+
 		page.on("requestfailed", (e) =>
 			console.error(
 				"Playwright ERROR: Request Failed",
@@ -356,6 +396,7 @@ async function launchWeb(
 				e.failure()?.errorText,
 			),
 		);
+
 		page.on("response", (response) => {
 			if (response.status() >= 400) {
 				console.error(
@@ -386,9 +427,11 @@ async function launchWeb(
 					perfFile,
 					`${matches[1]}\t${gcStatisticsToString(data)}\n`,
 				);
+
 				resolve(`${durationMarker}	${matches[1]}`);
 			}
 		});
+
 		page.goto(url.href);
 	});
 }
@@ -401,6 +444,7 @@ async function startHeapTracing(
 	});
 
 	const data: ITracingData[] = [];
+
 	cdp.on("Tracing.dataCollected", (e) => {
 		data.push(...(e.value as unknown as ITracingData[]));
 	});
@@ -418,7 +462,9 @@ async function resolveStartupHeapStatistics(
 	const tracingComplete = new Promise<unknown>((resolve) =>
 		cdp.once("Tracing.tracingComplete", resolve),
 	);
+
 	await cdp.send("Tracing.end");
+
 	await tracingComplete;
 
 	// Compute GC statistics
@@ -448,6 +494,7 @@ async function resolveStartupHeapStatistics(
 						event.args.usedHeapSizeBefore -
 						event.args.usedHeapSizeAfter;
 				}
+
 				break;
 
 			// GC Events that block the main thread
@@ -462,6 +509,7 @@ async function resolveStartupHeapStatistics(
 
 	// Collect final heap snapshot
 	const heapSnapshot = await collectHeapSnaptshot(cdp);
+
 	garbage += heapSnapshot.garbage;
 
 	return {
@@ -485,6 +533,7 @@ function gcStatisticsToString({
 
 async function collectHeapSnaptshot(cdp: playwright.CDPSession) {
 	const usedSizeBeforeGC = (await cdp.send("Runtime.getHeapUsage")).usedSize;
+
 	await cdp.send("HeapProfiler.collectGarbage");
 
 	const usedSizeAfterGC = (await cdp.send("Runtime.getHeapUsage")).usedSize;
@@ -511,10 +560,13 @@ function logMarker(
 	const duration = parseInt(matches[1]);
 
 	const markerDurations = durations.get(marker) ?? [];
+
 	markerDurations.push(duration);
+
 	markerDurations.sort(
 		(/** @type {number} */ a, /** @type {number} */ b) => a - b,
 	);
+
 	durations.set(marker, markerDurations);
 
 	const middleIndex = Math.floor(markerDurations.length / 2);

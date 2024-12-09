@@ -1,5 +1,5 @@
 {
-	"name": "@codeeditorland/@codeeditorland/perf",
+	"name": "@codeeditorland/perf",
 	"description": "Tooling for evaluating performance of VS Code",
 	"main": "out/index",
 	"typings": "index.d.ts",

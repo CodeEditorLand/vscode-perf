@@ -13,14 +13,14 @@
 	},
 	"dependencies": {
 		"chalk": "5.x",
-		"commander": "13.0.0",
+		"commander": "13.1.0",
 		"cookie": "1.0.2",
 		"js-base64": "3.7.7",
 		"node-fetch": "3.3.2"
 	},
 	"devDependencies": {
 		"@types/cookie": "1.0.0",
-		"@types/node": "22.10.7",
+		"@types/node": "22.10.9",
 		"@types/node-fetch": "2.6.12"
 	},
 	"authors": "microsoft"

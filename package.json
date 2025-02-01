@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@types/cookie": "1.0.0",
-		"@types/node": "22.10.10",
+		"@types/node": "22.13.0",
 		"@types/node-fetch": "2.6.12"
 	},
 	"authors": "microsoft"
